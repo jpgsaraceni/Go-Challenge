@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
-	"strconv"
-	"strings"
 	"time"
+
+	"github.com/jpgsaraceni/Go-Challenge/brlParser"
 )
 
 type Item struct {
@@ -34,7 +33,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]string, error) {
 	billingListValues := i.distributeValuesOwed(emails, valuesOwed)
 
 	for email, amount := range billingListValues {
-		billingList[email] = parseOutput(amount)
+		billingList[email] = brlParser.CentsToReal(amount)
 	}
 
 	return billingList, nil
@@ -45,7 +44,7 @@ func (i ItemList) sumItems() (int, error) {
 	var sum int
 
 	for _, item := range i {
-		unitPrice, err := parseInput(item.UnitPrice)
+		unitPrice, err := brlParser.RealToCents(item.UnitPrice)
 
 		if err != nil {
 			return 0, fmt.Errorf("invalid input")
@@ -83,24 +82,6 @@ func (i ItemList) distributeValuesOwed(emails EmailList, valuesOwed []int) map[s
 		billingListValues[email] = valuesOwed[i]
 	}
 	return billingListValues
-}
-
-func parseInput(input string) (int, error) {
-	input = strings.Replace(input, ",", ".", 1)
-
-	if s, err := strconv.ParseFloat(input, 32); err == nil {
-		s = math.Round(s * 100)
-		return int(s), nil
-	}
-	return 0, fmt.Errorf("invalid input")
-}
-
-func parseOutput(value int) string {
-	valueString := strconv.Itoa(value)
-	wholePart := valueString[:len(valueString)-2]
-	decimalPart := valueString[len(valueString)-2:]
-	valueString = fmt.Sprintf("R$%s,%s", wholePart, decimalPart)
-	return valueString
 }
 
 func main() {

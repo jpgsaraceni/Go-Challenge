@@ -25,15 +25,12 @@ var billingLists = []struct {
 
 func TestSplitBill(t *testing.T) {
 	for _, tt := range billingLists {
-		got, err := tt.itemList.SplitBill(tt.emailList)
+		got, _ := tt.itemList.SplitBill(tt.emailList)
 		for email := range got {
 			if got[email] != tt.want[email] {
 				t.Errorf("got %v want %v", got, tt.want)
 
 			}
-		}
-		if err == nil {
-
 		}
 	}
 }
