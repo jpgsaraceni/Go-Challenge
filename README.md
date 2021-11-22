@@ -15,7 +15,9 @@ I've created:
 1. A `struct` to model each item, with its name, unitary price and amount
 2. An Email type that is a slice of strings.
 3. A List type that is a slice of items (structs).
-4. A SplitBill method binded to the List type that recieves an Email type.
+4. A SplitBill method binded to the List type that recieves an Email type and returns a map with email/value owed key/value pairs.
+5. A brlParser to receive value in BRL (X.XX, X,XX, X,X, X.X or X formats), parse to integer (value in cents) and parse back to R$X,XX format.
+6. Automated tests.
 
 ### SplitBill method
 
@@ -26,7 +28,4 @@ I've created:
 
 ## To do
 
-* Receive input (list of items (with prices in cents) and list of emails);
-* Convert the prices to int type;
-* Refactor to receive prices as decimals or integers;
-* Write unitary tests.
+* Receive input (list of items and list of emails);
