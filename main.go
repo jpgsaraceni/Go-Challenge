@@ -9,53 +9,80 @@ import (
 	"time"
 )
 
-type Items struct {
+type Item struct {
 	ProductName string
 	UnitPrice   string
 	Amount      int
 }
 
-type Emails []string
+type EmailList []string
 
-type List []Items
+type ItemList []Item
 
-func (l List) SplitBill(emails Emails) (map[string]string, error) {
-	billingListValues := make(map[string]int)
-	billingListStrings := make(map[string]string)
+func (i ItemList) SplitBill(emails EmailList) (map[string]string, error) {
+
+	billingList := make(map[string]string)
 	numberOfPeople := len(emails)
 
-	var sum int
-	var avarage int
+	sum, err := i.sumItems()
 
-	for _, item := range l {
+	if err != nil {
+		return billingList, err
+	}
+
+	valuesOwed := i.getValuesOwed(sum, numberOfPeople)
+	billingListValues := i.distributeValuesOwed(emails, valuesOwed)
+
+	for email, amount := range billingListValues {
+		billingList[email] = parseOutput(amount)
+	}
+
+	return billingList, nil
+}
+
+func (i ItemList) sumItems() (int, error) {
+
+	var sum int
+
+	for _, item := range i {
 		unitPrice, err := parseInput(item.UnitPrice)
 
 		if err != nil {
-			return billingListStrings, fmt.Errorf("invalid input")
+			return 0, fmt.Errorf("invalid input")
 		}
 
 		sum += unitPrice * item.Amount
 	}
+	return sum, nil
+}
 
-	var rest = sum % numberOfPeople
-	var amountToSplit = sum - rest
+func (i ItemList) getValuesOwed(sum, numberOfPeople int) []int {
+	var valuesOwed = make([]int, numberOfPeople)
+	var rest int = sum % numberOfPeople
 
-	avarage = amountToSplit / numberOfPeople
+	for i := 0; i < numberOfPeople; i++ {
+		valuesOwed[i] = (sum - rest) / numberOfPeople
 
-	for _, email := range emails {
-		billingListValues[email] = avarage
+		if i < rest {
+			valuesOwed[i] += 1
+		}
 	}
+
+	return valuesOwed
+}
+
+func (i ItemList) distributeValuesOwed(emails EmailList, valuesOwed []int) map[string]int {
+	billingListValues := make(map[string]int)
 
 	rand.Seed(time.Now().UnixNano())
-	personToPayRest := emails[rand.Intn(numberOfPeople)]
+	rand.Shuffle(len(valuesOwed), func(i, j int) {
+		valuesOwed[i], valuesOwed[j] = valuesOwed[j], valuesOwed[i]
+	})
 
-	billingListValues[personToPayRest] += rest
-
-	for email, amount := range billingListValues {
-		billingListStrings[email] = parseOutput(amount)
+	for i, email := range emails {
+		billingListValues[email] = valuesOwed[i]
 	}
-
-	return billingListStrings, nil
+	return billingListValues
 }
 
 func parseInput(input string) (int, error) {
@@ -70,18 +97,18 @@ func parseInput(input string) (int, error) {
 
 func parseOutput(value int) string {
 	valueString := strconv.Itoa(value)
-	integer := valueString[:len(valueString)-2]
-	decimal := valueString[len(valueString)-2:]
-	valueString = fmt.Sprintf("R$%s,%s", integer, decimal)
+	wholePart := valueString[:len(valueString)-2]
+	decimalPart := valueString[len(valueString)-2:]
+	valueString = fmt.Sprintf("R$%s,%s", wholePart, decimalPart)
 	return valueString
 }
 
 func main() {
-	var barCheck = List{
-		{"Cerveja", "11", 4},
+	var barCheck = ItemList{
+		{"Cerveja", "11", 42},
 		{"Petisco", "50", 1},
 	}
-	var emailList = Emails{
+	var emailList = EmailList{
 		"a@email.com",
 		"b@email.com",
 		"c@email.com",
