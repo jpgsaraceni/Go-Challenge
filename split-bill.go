@@ -92,7 +92,7 @@ func parseInput(input string) (int, error) {
 		s = math.Round(s * 100)
 		return int(s), nil
 	}
-	return 0, fmt.Errorf("invalid input.")
+	return 0, fmt.Errorf("invalid input")
 }
 
 func parseOutput(value int) string {
