@@ -39,6 +39,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]string, error) {
 	return billingList, nil
 }
 
+// var inputErr = errors.New("invalid input")
 func (i ItemList) sumItems() (int, error) {
 
 	var sum int
@@ -48,6 +49,7 @@ func (i ItemList) sumItems() (int, error) {
 
 		if err != nil {
 			return 0, fmt.Errorf("invalid input")
+			// return 0, inputErr
 		}
 
 		sum += unitPrice * item.Amount
