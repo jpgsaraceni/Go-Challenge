@@ -11,13 +11,13 @@ func TestSplitBill(t *testing.T) {
 		name            string
 		itemList        ItemList
 		emailList       EmailList
-		expectedSuccess map[string]string
+		expectedSuccess map[string]int
 		expectedError   bool // change to a variable
 	}
 
 	testCases := []testCase{
 		{
-			name: "should return an equal split for all emails",
+			name: "should return an equal split (in cents) for all emails",
 			itemList: []Item{
 				{
 					"Cerveja",
@@ -29,9 +29,9 @@ func TestSplitBill(t *testing.T) {
 				"a@email.com",
 				"b@email.com",
 			},
-			expectedSuccess: map[string]string{
-				"a@email.com": "R$50,00",
-				"b@email.com": "R$50,00",
+			expectedSuccess: map[string]int{
+				"a@email.com": 5000,
+				"b@email.com": 5000,
 			},
 		},
 		{
@@ -47,7 +47,7 @@ func TestSplitBill(t *testing.T) {
 				"a@email.com",
 				"b@email.com",
 			},
-			expectedSuccess: map[string]string{},
+			expectedSuccess: map[string]int{},
 			expectedError:   true,
 		},
 	}
@@ -66,7 +66,7 @@ func TestSplitBill(t *testing.T) {
 	}
 }
 
-func assertSplit(t testing.TB, got, expected map[string]string) {
+func assertSplit(t testing.TB, got, expected map[string]int) {
 	for email := range got {
 		if got[email] != expected[email] {
 			t.Errorf("got %v expected %v", got, expected)
@@ -74,7 +74,7 @@ func assertSplit(t testing.TB, got, expected map[string]string) {
 	}
 }
 
-func assertError(t testing.TB, got map[string]string, err error) {
+func assertError(t testing.TB, got map[string]int, err error) {
 	if err == nil {
 		t.Errorf("got %v expected an error", got)
 	}

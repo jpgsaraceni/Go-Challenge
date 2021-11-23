@@ -18,9 +18,9 @@ type EmailList []string
 
 type ItemList []Item
 
-func (i ItemList) SplitBill(emails EmailList) (map[string]string, error) {
+func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 
-	billingList := make(map[string]string)
+	billingList := make(map[string]int)
 	numberOfPeople := len(emails)
 
 	sum, err := i.sumItems()
@@ -30,11 +30,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]string, error) {
 	}
 
 	valuesOwed := i.getValuesOwed(sum, numberOfPeople)
-	billingListValues := i.distributeValuesOwed(emails, valuesOwed)
-
-	for email, amount := range billingListValues {
-		billingList[email] = brlParser.CentsToReal(amount)
-	}
+	billingList = i.distributeValuesOwed(emails, valuesOwed)
 
 	return billingList, nil
 }
@@ -101,6 +97,7 @@ func main() {
 		fmt.Println("verifique os valores informados e tente novamente!")
 	}
 	for email, amount := range resultingMap {
-		fmt.Printf("Email: %s. Valor a pagar: %s\n", email, amount)
+		parsedValue := brlParser.CentsToReal(amount)
+		fmt.Printf("Email: %s. Valor a pagar: %s\n", email, parsedValue)
 	}
 }
