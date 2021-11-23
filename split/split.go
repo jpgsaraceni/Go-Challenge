@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -35,7 +36,8 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	return billingList, nil
 }
 
-// var inputErr = errors.New("invalid input")
+var errInput = errors.New("invalid input")
+
 func (i ItemList) sumItems() (int, error) {
 
 	var sum int
@@ -44,8 +46,8 @@ func (i ItemList) sumItems() (int, error) {
 		unitPrice, err := brlParser.RealToCents(item.UnitPrice)
 
 		if err != nil {
-			return 0, fmt.Errorf("invalid input")
-			// return 0, inputErr
+			// return 0, fmt.Errorf("invalid input")
+			return 0, errInput
 		}
 
 		sum += unitPrice * item.Amount

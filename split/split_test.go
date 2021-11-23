@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -12,8 +13,10 @@ func TestSplitBill(t *testing.T) {
 		itemList        ItemList
 		emailList       EmailList
 		expectedSuccess map[string]int
-		expectedError   bool // change to a variable
+		expectedError   error
 	}
+
+	var errInput = errors.New("invalid input")
 
 	testCases := []testCase{
 		{
@@ -48,7 +51,7 @@ func TestSplitBill(t *testing.T) {
 				"b@email.com",
 			},
 			expectedSuccess: map[string]int{},
-			expectedError:   true,
+			expectedError:   errInput,
 		},
 	}
 
@@ -57,7 +60,7 @@ func TestSplitBill(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got, err := tt.itemList.SplitBill(tt.emailList)
-			if tt.expectedError {
+			if tt.expectedError != nil {
 				assertError(t, got, err)
 				return
 			}
