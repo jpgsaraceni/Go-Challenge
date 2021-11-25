@@ -46,7 +46,6 @@ func (i ItemList) sumItems() (int, error) {
 		unitPrice, err := brlParser.RealToCents(item.UnitPrice)
 
 		if err != nil {
-			// return 0, fmt.Errorf("invalid input")
 			return 0, errInput
 		}
 
