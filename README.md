@@ -8,6 +8,28 @@ Create a program to:
 3.1. (if the division is not exact, one person must pay the minimum amount more than the others so that the sum of what each person pays equals the sum of the prices times amounts).
 4. Return a map with the keys being the person's email and the value how much they should pay.
 
+## Run the program
+
+You will need [Golang](https://go.dev/doc/install) installed locally.
+
+In the `/split` directory, execute
+
+```shell
+go run split.go
+```
+
+in your terminal.
+
+This program does not accept input, so it will run with the values stored in variables in the `split.go` file. You may change them, as long as: the UnitPrice is a comma or period separated decimal (or whole) number string.
+
+To run the automated tests, execute
+
+```shell
+go test
+```
+
+in your terminal, in the directories `/brlParser` and `/split`
+
 ## Status
 
 I've created:
@@ -24,8 +46,11 @@ I've created:
 * Iterates over the List to calculate the price of each item (unitary price times amount);
 * Sums the prices of each item;
 * Divides the sum by the amount of people;
-* If the avarage calculated for each person to pay is not an integer, adds the rest of the division to a random person from the list before dividing, to always have exact values.
+* If the avarage calculated for each person to pay is not an integer, adds the x rest of the division to x random people (1 cent each) from the list after dividing the whole part, to always have exact values and the total sum be equal the sum of each individual payment.
 
 ## To do
 
-* Receive input (list of items and list of emails);
+* Check for repeated emails;
+* Handle errors in brlParser CentsToReal method;
+* Improve test coverage (cover cases when division is not exact, repeated emails, and error handling);
+* Calculate value owed by each person and build email/value owed map in the same loop (assess if this is possible while assigning values randomly).

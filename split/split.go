@@ -35,6 +35,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 
 	valuesOwed := i.getValuesOwed(sum, numberOfPeople)
 	billingList := i.distributeValuesOwed(emails, valuesOwed)
+	// billingList := i.distributeValues(emails, sum, numberOfPeople)
 
 	return billingList, nil
 }
@@ -52,9 +53,10 @@ func (i ItemList) sumItems() int {
 func (i ItemList) getValuesOwed(sum, numberOfPeople int) []int {
 	var valuesOwed = make([]int, numberOfPeople)
 	var rest int = sum % numberOfPeople
+	var baseValueOwed = (sum - rest) / numberOfPeople
 
 	for i := 0; i < numberOfPeople; i++ {
-		valuesOwed[i] = (sum - rest) / numberOfPeople
+		valuesOwed[i] = baseValueOwed
 
 		if i < rest {
 			valuesOwed[i] += 1
@@ -63,6 +65,33 @@ func (i ItemList) getValuesOwed(sum, numberOfPeople int) []int {
 
 	return valuesOwed
 }
+
+// don't know how to shuffle values in the same loop as they are assigned (if possible)
+
+// func (i ItemList) distributeValues(emails EmailList, sum, numberOfPeople int) map[string]int {
+// 	billingListValues := make(map[string]int)
+
+// 	var valuesOwed = make([]int, numberOfPeople)
+// 	var rest int = sum % numberOfPeople
+// 	var baseValueOwed = (sum - rest) / numberOfPeople
+
+// 	for i, email := range emails {
+// 		valuesOwed[i] = baseValueOwed
+
+// 		if i < rest {
+// 			valuesOwed[i] += 1
+// 		}
+
+// 		rand.Seed(time.Now().UnixNano())
+// 		rand.Shuffle(len(valuesOwed), func(i, j int) {
+// 			valuesOwed[i], valuesOwed[j] = valuesOwed[j], valuesOwed[i]
+// 		})
+
+// 		billingListValues[email] = valuesOwed[i]
+// 	}
+
+// 	return billingListValues
+// }
 
 func (i ItemList) distributeValuesOwed(emails EmailList, valuesOwed []int) map[string]int {
 	billingListValues := make(map[string]int)
