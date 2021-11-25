@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"testing"
 )
 
@@ -16,7 +15,7 @@ func TestSplitBill(t *testing.T) {
 		expectedError   error
 	}
 
-	var errInput = errors.New("invalid input")
+	// var errInput = errors.New("invalid input")
 
 	testCases := []testCase{
 		{
@@ -24,7 +23,7 @@ func TestSplitBill(t *testing.T) {
 			itemList: []Item{
 				{
 					"Cerveja",
-					"10,00",
+					10,
 					10,
 				},
 			},
@@ -37,22 +36,22 @@ func TestSplitBill(t *testing.T) {
 				"b@email.com": 5000,
 			},
 		},
-		{
-			name: "should return an error",
-			itemList: []Item{
-				{
-					"Cerveja",
-					"10,00a",
-					10,
-				},
-			},
-			emailList: []string{
-				"a@email.com",
-				"b@email.com",
-			},
-			expectedSuccess: map[string]int{},
-			expectedError:   errInput,
-		},
+		// {
+		// 	name: "should return an error",
+		// 	itemList: []Item{
+		// 		{
+		// 			"Cerveja",
+		// 			"10,00a",
+		// 			10,
+		// 		},
+		// 	},
+		// 	emailList: []string{
+		// 		"a@email.com",
+		// 		"b@email.com",
+		// 	},
+		// 	expectedSuccess: map[string]int{},
+		// 	expectedError:   errInput,
+		// },
 	}
 
 	for _, tt := range testCases {

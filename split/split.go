@@ -1,9 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/jpgsaraceni/Go-Challenge/brlParser"
@@ -11,47 +11,42 @@ import (
 
 type Item struct {
 	ProductName string
-	UnitPrice   string
+	UnitPrice   int
 	Amount      int
 }
 
+type ItemString struct {
+	ProductName string
+	UnitPrice   string
+	Amount      string
+}
+
 type EmailList []string
+
+type ItemListString []ItemString
 
 type ItemList []Item
 
 func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 
-	billingList := make(map[string]int)
 	numberOfPeople := len(emails)
 
-	sum, err := i.sumItems()
-
-	if err != nil {
-		return billingList, err
-	}
+	sum := i.sumItems()
 
 	valuesOwed := i.getValuesOwed(sum, numberOfPeople)
-	billingList = i.distributeValuesOwed(emails, valuesOwed)
+	billingList := i.distributeValuesOwed(emails, valuesOwed)
 
 	return billingList, nil
 }
 
-var errInput = errors.New("invalid input")
-
-func (i ItemList) sumItems() (int, error) {
+func (i ItemList) sumItems() int {
 
 	var sum int
 
 	for _, item := range i {
-		unitPrice, err := brlParser.RealToCents(item.UnitPrice)
-
-		if err != nil {
-			return 0, errInput
-		}
-
-		sum += unitPrice * item.Amount
+		sum += item.UnitPrice * item.Amount
 	}
-	return sum, nil
+	return sum
 }
 
 func (i ItemList) getValuesOwed(sum, numberOfPeople int) []int {
@@ -84,16 +79,43 @@ func (i ItemList) distributeValuesOwed(emails EmailList, valuesOwed []int) map[s
 }
 
 func main() {
-	var barCheck = ItemList{
-		{"Cerveja", "11", 42},
-		{"Petisco", "50", 1},
+	var barCheck = ItemListString{
+		{"Cerveja", "11", "42"},
+		{"Petisco", "50", "1"},
 	}
 	var emailList = EmailList{
 		"a@email.com",
 		"b@email.com",
 		"c@email.com",
 	}
-	resultingMap, err := barCheck.SplitBill(emailList)
+	barCheckParsed := make(ItemList, 0)
+
+	// var errInput = errors.New("invalid input")
+
+	for _, item := range barCheck {
+		priceInCents, err := brlParser.RealToCents(item.UnitPrice)
+
+		if err != nil {
+			fmt.Println("verifique os valores informados e tente novamente!")
+			return
+		}
+
+		amountInt, err := strconv.Atoi(item.Amount)
+
+		if err != nil {
+			fmt.Println("verifique os valores informados e tente novamente!")
+			return
+		}
+
+		barCheckParsed = append(barCheckParsed, Item{
+			item.ProductName,
+			priceInCents,
+			amountInt,
+		})
+	}
+
+	resultingMap, err := barCheckParsed.SplitBill(emailList)
+
 	if err != nil {
 		fmt.Println("verifique os valores informados e tente novamente!")
 	}
