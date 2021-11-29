@@ -53,4 +53,3 @@ I've created:
 * Check for repeated emails;
 * Handle errors in brlParser CentsToReal method;
 * Improve test coverage (cover cases when division is not exact, repeated emails, and error handling);
-* Calculate value owed by each person and build email/value owed map in the same loop (assess if this is possible while assigning values randomly).
