@@ -102,7 +102,13 @@ func main() {
 		fmt.Println("verifique os valores informados e tente novamente!")
 	}
 	for email, amount := range resultingMap {
-		parsedValue := brlParser.CentsToReal(amount)
+		parsedValue, err := brlParser.CentsToReal(amount)
+
+		if err != nil {
+			fmt.Println("verifique os valores informados e tente novamente!")
+			return
+		}
+
 		fmt.Printf("Email: %s. Valor a pagar: %s\n", email, parsedValue)
 	}
 }

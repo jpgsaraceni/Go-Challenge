@@ -154,13 +154,13 @@ func TestRealToCents(t *testing.T) {
 			t.Parallel()
 			got, err := RealToCents(tt.input)
 
-			if tt.expectedError != nil {
-				assertError(t, got, err)
+			if tt.expectedError != nil && err == nil {
+				t.Errorf("got %d expected an error", got)
 				return
 			}
 
 			if got != tt.expectedSuccess {
-				t.Errorf("got %v expected %v", got, tt.expectedSuccess)
+				t.Errorf("got %d expected %d", got, tt.expectedSuccess)
 			}
 		})
 	}
@@ -176,16 +176,59 @@ var outputs = []struct {
 }
 
 func TestCentsToReal(t *testing.T) {
-	for _, tt := range outputs {
-		got, _ := CentsToReal(tt.input)
-		if got != tt.want {
-			t.Errorf("got %s want %s", got, tt.want)
-		}
+	type testCase struct {
+		name            string
+		input           int
+		expectedSuccess string
+		expectedError   error
 	}
-}
+	testCases := []testCase{
+		{
+			name:            "should return value in R$X,XX format, receives in cents",
+			input:           101,
+			expectedSuccess: "R$1,01",
+			expectedError:   nil,
+		},
+		{
+			name:            "should return value in R$X,XX format, receives less than 100 in cents",
+			input:           10,
+			expectedSuccess: "R$0,10",
+			expectedError:   nil,
+		},
+		{
+			name:            "should return value in R$X,XX format, receives less than 100 in cents",
+			input:           1,
+			expectedSuccess: "R$0,01",
+			expectedError:   nil,
+		},
+		{
+			name:            "should return R$0,00 when receives 0",
+			input:           0,
+			expectedSuccess: "R$0,00",
+			expectedError:   nil,
+		},
+		{
+			name:            "should return error when receives negative",
+			input:           -1,
+			expectedSuccess: "",
+			expectedError:   fmt.Errorf("invalid input"),
+		},
+	}
 
-func assertError(t testing.TB, got int, err error) {
-	if err == nil {
-		t.Errorf("got %v expected an error", got)
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := CentsToReal(tt.input)
+
+			if tt.expectedError != nil && err == nil {
+				t.Errorf("got %s expected an error", got)
+				return
+			}
+
+			if got != tt.expectedSuccess {
+				t.Errorf("got %s expected %s", got, tt.expectedSuccess)
+			}
+		})
 	}
 }
