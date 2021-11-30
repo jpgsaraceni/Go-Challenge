@@ -32,8 +32,8 @@ func TestSplitBill(t *testing.T) {
 				"b@email.com",
 			},
 			expectedSuccess: map[string]int{
-				"a@email.com": 5000,
-				"b@email.com": 5000,
+				"a@email.com": 50,
+				"b@email.com": 50,
 			},
 		},
 		// {

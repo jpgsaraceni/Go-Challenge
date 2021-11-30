@@ -1,11 +1,15 @@
 package brlParser
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
 	"strings"
 )
+
+var errInputPrice = errors.New("preços contêm caracteres inválidos")
+var errNegativeValue = errors.New("valor negativo")
 
 func RealToCents(input string) (int, error) {
 	input = strings.Replace(input, ",", ".", 1)
@@ -14,12 +18,12 @@ func RealToCents(input string) (int, error) {
 		s = math.Round(s * 100)
 		return int(s), nil
 	}
-	return 0, fmt.Errorf("invalid input")
+	return 0, errInputPrice
 }
 
 func CentsToReal(value int) (string, error) {
 	if value < 0 {
-		return "", fmt.Errorf("invalid negative")
+		return "", errNegativeValue
 	}
 
 	if value == 0 {

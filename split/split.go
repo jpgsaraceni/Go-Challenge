@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -27,8 +28,16 @@ type ItemListString []ItemString
 
 type ItemList []Item
 
+var errRepeatedEmails = errors.New("lista contém emails repetidos")
+
 func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	billingList := make(map[string]int)
+
+	err := emails.checkForRepeated()
+	if err != nil {
+		return billingList, err
+	}
+
 	numberOfPeople := len(emails)
 	sum := i.sumItems()
 	rest := sum % numberOfPeople
@@ -50,6 +59,19 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	return billingList, nil
 }
 
+func (e EmailList) checkForRepeated() error {
+	existentEmails := make(map[string]int)
+
+	for _, email := range e {
+		if existentEmails[email] > 0 {
+			return errRepeatedEmails
+		}
+
+		existentEmails[email]++
+	}
+	return nil
+}
+
 func (i ItemList) sumItems() int {
 
 	var sum int
@@ -67,7 +89,7 @@ func main() {
 	}
 	var emailList = EmailList{
 		"a@email.com",
-		"b@email.com",
+		"a@email.com",
 		"c@email.com",
 	}
 	barCheckParsed := make(ItemList, 0)
@@ -78,14 +100,14 @@ func main() {
 		priceInCents, err := brlParser.RealToCents(item.UnitPrice)
 
 		if err != nil {
-			fmt.Println("verifique os valores informados e tente novamente!")
+			fmt.Println(err)
 			return
 		}
 
 		amountInt, err := strconv.Atoi(item.Amount)
 
 		if err != nil {
-			fmt.Println("verifique os valores informados e tente novamente!")
+			fmt.Println(err)
 			return
 		}
 
@@ -99,13 +121,14 @@ func main() {
 	resultingMap, err := barCheckParsed.SplitBill(emailList)
 
 	if err != nil {
-		fmt.Println("verifique os valores informados e tente novamente!")
+		fmt.Println(err)
+		return
 	}
 	for email, amount := range resultingMap {
 		parsedValue, err := brlParser.CentsToReal(amount)
 
 		if err != nil {
-			fmt.Println("verifique os valores informados e tente novamente!")
+			fmt.Println(err)
 			return
 		}
 

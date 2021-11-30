@@ -12,10 +12,10 @@ Create a program to:
 
 You will need [Golang](https://go.dev/doc/install) installed locally.
 
-In the `/split` directory, execute
+Run
 
 ```shell
-go run split.go
+go run split/split.go
 ```
 
 in your terminal.
@@ -51,5 +51,4 @@ I've created:
 ## To do
 
 * Check for repeated emails;
-* Handle errors in brlParser CentsToReal method;
 * Improve test coverage (cover cases when division is not exact, repeated emails, and error handling);

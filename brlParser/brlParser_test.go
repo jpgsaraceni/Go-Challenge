@@ -1,7 +1,6 @@
 package brlParser
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -108,43 +107,43 @@ func TestRealToCents(t *testing.T) {
 			name:            "should return error when not a number.",
 			input:           "3,a010",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when not a number.",
 			input:           "abc",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when more than one comma.",
 			input:           "1,20,1",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when more than one dot.",
 			input:           "1.20.2",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when a dot with no number.",
 			input:           ".",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when a comma with no number.",
 			input:           ",",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 		{
 			name:            "should return error when comma and dot.",
 			input:           "1,2.3",
 			expectedSuccess: 0,
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errInputPrice,
 		},
 	}
 
@@ -166,15 +165,6 @@ func TestRealToCents(t *testing.T) {
 	}
 }
 
-var outputs = []struct {
-	input int
-	want  string
-}{
-	{100, "R$1,00"},
-	{110, "R$1,10"},
-	{111, "R$1,11"},
-}
-
 func TestCentsToReal(t *testing.T) {
 	type testCase struct {
 		name            string
@@ -182,6 +172,7 @@ func TestCentsToReal(t *testing.T) {
 		expectedSuccess string
 		expectedError   error
 	}
+
 	testCases := []testCase{
 		{
 			name:            "should return value in R$X,XX format, receives in cents",
@@ -211,7 +202,7 @@ func TestCentsToReal(t *testing.T) {
 			name:            "should return error when receives negative",
 			input:           -1,
 			expectedSuccess: "",
-			expectedError:   fmt.Errorf("invalid input"),
+			expectedError:   errNegativeValue,
 		},
 	}
 
