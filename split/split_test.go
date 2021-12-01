@@ -15,11 +15,9 @@ func TestSplitBill(t *testing.T) {
 		expectedError   error
 	}
 
-	// var errInput = errors.New("invalid input")
-
 	testCases := []testCase{
 		{
-			name: "should return an equal split (in cents) for all emails",
+			name: "should return an equal split for all emails",
 			itemList: []Item{
 				{
 					"Cerveja",
@@ -36,22 +34,6 @@ func TestSplitBill(t *testing.T) {
 				"b@email.com": 50,
 			},
 		},
-		// {
-		// 	name: "should return an error",
-		// 	itemList: []Item{
-		// 		{
-		// 			"Cerveja",
-		// 			"10,00a",
-		// 			10,
-		// 		},
-		// 	},
-		// 	emailList: []string{
-		// 		"a@email.com",
-		// 		"b@email.com",
-		// 	},
-		// 	expectedSuccess: map[string]int{},
-		// 	expectedError:   errInput,
-		// },
 	}
 
 	for _, tt := range testCases {

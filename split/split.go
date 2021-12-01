@@ -28,6 +28,13 @@ type ItemListString []ItemString
 
 type ItemList []Item
 
+type Shuffler interface {
+	shuffleList() EmailList // should checkForRepeated method be in this interface too?
+}
+
+// should there be an interface for the ItemList methods too?
+
+// is printing this error message ok?
 var errRepeatedEmails = errors.New("lista contém emails repetidos")
 
 func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
@@ -43,10 +50,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	rest := sum % numberOfPeople
 	baseValueOwed := (sum - rest) / numberOfPeople
 
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(numberOfPeople, func(i, j int) {
-		emails[i], emails[j] = emails[j], emails[i]
-	})
+	emails = emails.shuffleList()
 
 	for i, email := range emails {
 		billingList[email] = baseValueOwed
@@ -57,6 +61,14 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	}
 
 	return billingList, nil
+}
+
+func (e EmailList) shuffleList() EmailList {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(e), func(i, j int) {
+		e[i], e[j] = e[j], e[i]
+	})
+	return e
 }
 
 func (e EmailList) checkForRepeated() error {
@@ -89,12 +101,10 @@ func main() {
 	}
 	var emailList = EmailList{
 		"a@email.com",
-		"a@email.com",
+		"b@email.com",
 		"c@email.com",
 	}
 	barCheckParsed := make(ItemList, 0)
-
-	// var errInput = errors.New("invalid input")
 
 	for _, item := range barCheck {
 		priceInCents, err := brlParser.RealToCents(item.UnitPrice)
