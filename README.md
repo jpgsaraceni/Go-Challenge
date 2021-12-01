@@ -50,5 +50,4 @@ I've created:
 
 ## To do
 
-* Check for repeated emails;
 * Improve test coverage (cover cases when division is not exact, repeated emails, and error handling);
