@@ -5,6 +5,8 @@ import (
 )
 
 func TestRealToCents(t *testing.T) {
+	t.Parallel()
+
 	type testCase struct {
 		name            string
 		input           string
