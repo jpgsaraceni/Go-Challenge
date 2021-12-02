@@ -23,19 +23,17 @@ type ItemString struct {
 }
 
 type EmailList []string
-
 type ItemListString []ItemString
-
 type ItemList []Item
 
 type Shuffler interface {
-	shuffleList() EmailList // should checkForRepeated method be in this interface too?
+	Shuffle()
 }
 
-// should there be an interface for the ItemList methods too?
+type DefaultShuffle struct{}
 
 // is printing this error message ok?
-var errRepeatedEmails = errors.New("lista contém emails repetidos")
+var ErrRepeatedEmails = errors.New("lista contém emails repetidos")
 
 func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	billingList := make(map[string]int)
@@ -50,7 +48,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	rest := sum % numberOfPeople
 	baseValueOwed := (sum - rest) / numberOfPeople
 
-	emails = emails.shuffleList()
+	emails.Shuffle()
 
 	for i, email := range emails {
 		billingList[email] = baseValueOwed
@@ -63,12 +61,11 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	return billingList, nil
 }
 
-func (e EmailList) shuffleList() EmailList {
+func (e EmailList) Shuffle() {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(e), func(i, j int) {
 		e[i], e[j] = e[j], e[i]
 	})
-	return e
 }
 
 func (e EmailList) checkForRepeated() error {
@@ -76,7 +73,7 @@ func (e EmailList) checkForRepeated() error {
 
 	for _, email := range e {
 		if existentEmails[email] > 0 {
-			return errRepeatedEmails
+			return ErrRepeatedEmails
 		}
 
 		existentEmails[email]++
