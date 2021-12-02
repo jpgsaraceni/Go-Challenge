@@ -1,4 +1,4 @@
-# The Challange
+# The Challenge
 
 Create a program to:
 
@@ -25,10 +25,10 @@ This program does not accept input, so it will run with the values stored in var
 To run the automated tests, execute
 
 ```shell
-go test
+go test ./..
 ```
 
-in your terminal, in the directories `/brlParser` and `/split`
+in your terminal.
 
 ## Status
 
