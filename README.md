@@ -47,7 +47,3 @@ I've created:
 * Sums the prices of each item;
 * Divides the sum by the amount of people;
 * If the avarage calculated for each person to pay is not an integer, adds the x rest of the division to x random people (1 cent each) from the list after dividing the whole part, to always have exact values and the total sum be equal the sum of each individual payment.
-
-## To do
-
-* Improve test coverage (cover cases when division is not exact, repeated emails, and error handling);

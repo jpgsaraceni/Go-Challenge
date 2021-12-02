@@ -103,7 +103,7 @@ func TestSplitBill(t *testing.T) {
 			},
 		},
 		{
-			name: "should return an equal split for all emails",
+			name: "should return one unit more for some emails",
 			itemList: []Item{
 				{"Cerveja", 1, 10},
 				{"Petisco", 7, 1},
