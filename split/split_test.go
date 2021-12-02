@@ -13,6 +13,7 @@ func TestSplitBill(t *testing.T) {
 		emailList       EmailList
 		expectedSuccess map[string]int
 		expectedError   error
+		shuffleMock     SpyShuffler
 	}
 
 	testCases := []testCase{
@@ -32,6 +33,14 @@ func TestSplitBill(t *testing.T) {
 			expectedSuccess: map[string]int{
 				"a@email.com": 50,
 				"b@email.com": 50,
+			},
+			shuffleMock: SpyShuffler{
+				ShuffleFunc: func(emails EmailList) EmailList {
+					return EmailList{
+						"a@email.com",
+						"b@email.com",
+					}
+				},
 			},
 		},
 		{
@@ -54,7 +63,17 @@ func TestSplitBill(t *testing.T) {
 				"d@email.com": 36,
 				"e@email.com": 36,
 			},
-			expectedError: nil,
+			shuffleMock: SpyShuffler{
+				ShuffleFunc: func(emails EmailList) EmailList {
+					return EmailList{
+						"a@email.com",
+						"b@email.com",
+						"c@email.com",
+						"d@email.com",
+						"e@email.com",
+					}
+				},
+			},
 		},
 		{
 			name: "should return a repeated email error",
@@ -71,6 +90,49 @@ func TestSplitBill(t *testing.T) {
 			},
 			expectedSuccess: map[string]int{},
 			expectedError:   ErrRepeatedEmails,
+			shuffleMock: SpyShuffler{
+				ShuffleFunc: func(emails EmailList) EmailList {
+					return EmailList{
+						"a@email.com",
+						"a@email.com",
+						"c@email.com",
+						"d@email.com",
+						"e@email.com",
+					}
+				},
+			},
+		},
+		{
+			name: "should return an equal split for all emails",
+			itemList: []Item{
+				{"Cerveja", 1, 10},
+				{"Petisco", 7, 1},
+			},
+			emailList: []string{
+				"a@email.com",
+				"b@email.com",
+				"c@email.com",
+				"d@email.com",
+				"e@email.com",
+			},
+			expectedSuccess: map[string]int{
+				"b@email.com": 4,
+				"a@email.com": 4,
+				"d@email.com": 3,
+				"c@email.com": 3,
+				"e@email.com": 3,
+			},
+			shuffleMock: SpyShuffler{
+				ShuffleFunc: func(emails EmailList) EmailList {
+					return EmailList{
+						"b@email.com",
+						"a@email.com",
+						"d@email.com",
+						"c@email.com",
+						"e@email.com",
+					}
+				},
+			},
 		},
 	}
 
@@ -78,7 +140,7 @@ func TestSplitBill(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := tt.itemList.SplitBill(tt.emailList)
+			got, err := tt.itemList.SplitBill(tt.emailList, &tt.shuffleMock)
 			if tt.expectedError != nil {
 				assertError(t, err, tt.expectedError)
 				return
@@ -103,9 +165,9 @@ func assertError(t testing.TB, gotError, expectedError error) {
 }
 
 type SpyShuffler struct {
-	// how do I mock this?
+	ShuffleFunc func(emails EmailList) EmailList
 }
 
-func (s *SpyShuffler) Shuffle() {
-
+func (s *SpyShuffler) Shuffle(emails EmailList) EmailList {
+	return s.ShuffleFunc(emails)
 }

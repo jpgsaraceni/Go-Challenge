@@ -27,7 +27,7 @@ type ItemListString []ItemString
 type ItemList []Item
 
 type Shuffler interface {
-	Shuffle()
+	Shuffle(EmailList) EmailList
 }
 
 type DefaultShuffle struct{}
@@ -35,7 +35,7 @@ type DefaultShuffle struct{}
 // is printing this error message ok?
 var ErrRepeatedEmails = errors.New("lista contém emails repetidos")
 
-func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
+func (i ItemList) SplitBill(emails EmailList, shuffler Shuffler) (map[string]int, error) {
 	billingList := make(map[string]int)
 
 	err := emails.checkForRepeated()
@@ -48,7 +48,7 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	rest := sum % numberOfPeople
 	baseValueOwed := (sum - rest) / numberOfPeople
 
-	emails.Shuffle()
+	emails = shuffler.Shuffle(emails)
 
 	for i, email := range emails {
 		billingList[email] = baseValueOwed
@@ -61,11 +61,13 @@ func (i ItemList) SplitBill(emails EmailList) (map[string]int, error) {
 	return billingList, nil
 }
 
-func (e EmailList) Shuffle() {
+func (d DefaultShuffle) Shuffle(emails EmailList) EmailList {
 	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(e), func(i, j int) {
-		e[i], e[j] = e[j], e[i]
+	rand.Shuffle(len(emails), func(i, j int) {
+		emails[i], emails[j] = emails[j], emails[i]
 	})
+
+	return emails
 }
 
 func (e EmailList) checkForRepeated() error {
@@ -125,7 +127,8 @@ func main() {
 		})
 	}
 
-	resultingMap, err := barCheckParsed.SplitBill(emailList)
+	d := DefaultShuffle{}
+	resultingMap, err := barCheckParsed.SplitBill(emailList, d)
 
 	if err != nil {
 		fmt.Println(err)
