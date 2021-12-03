@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jpgsaraceni/Go-Challenge/brlParser"
+	"github.com/jpgsaraceni/Go-Challenge/brlparser"
 )
 
 type Item struct {
@@ -22,9 +22,11 @@ type ItemString struct {
 	Amount      string
 }
 
-type EmailList []string
-type ItemListString []ItemString
-type ItemList []Item
+type (
+	EmailList      []string
+	ItemListString []ItemString
+	ItemList       []Item
+)
 
 type Shuffler interface {
 	Shuffle(EmailList) EmailList
@@ -48,14 +50,14 @@ func (i ItemList) SplitBill(emails EmailList, shuffler Shuffler) (map[string]int
 		billingList[email] = baseValueOwed
 
 		if i < rest {
-			billingList[email] += 1
+			billingList[email]++
 		}
 	}
 
 	return billingList, nil
 }
 
-func (d DefaultShuffle) Shuffle(emails EmailList) EmailList {
+func (DefaultShuffle) Shuffle(emails EmailList) EmailList {
 	rand.Shuffle(len(emails), func(i, j int) {
 		emails[i], emails[j] = emails[j], emails[i]
 	})
@@ -73,27 +75,28 @@ func (e EmailList) checkForRepeated() error {
 
 		existentEmails[email]++
 	}
+
 	return nil
 }
 
 func (i ItemList) sumItems() int {
-
 	var sum int
 
 	for _, item := range i {
 		sum += item.UnitPrice * item.Amount
 	}
+
 	return sum
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	var barCheck = ItemListString{
+	barCheck := ItemListString{
 		{"Cerveja", "11", "42"},
 		{"Petisco", "50", "1"},
 	}
-	var emailList = EmailList{
+	emailList := EmailList{
 		"a@email.com",
 		"b@email.com",
 		"c@email.com",
@@ -102,23 +105,27 @@ func main() {
 	err := emailList.checkForRepeated()
 	if err != nil {
 		fmt.Println(err)
+
 		return
 	}
 
 	barCheckParsed := make(ItemList, 0)
 
 	for _, item := range barCheck {
-		priceInCents, err := brlParser.RealToCents(item.UnitPrice)
+		var priceInCents int
 
+		priceInCents, err = brlparser.RealToCents(item.UnitPrice)
 		if err != nil {
 			fmt.Println(err)
+
 			return
 		}
 
-		amountInt, err := strconv.Atoi(item.Amount)
-
+		var amountInt int
+		amountInt, err = strconv.Atoi(item.Amount)
 		if err != nil {
 			fmt.Println(err)
+
 			return
 		}
 
@@ -131,16 +138,16 @@ func main() {
 
 	d := DefaultShuffle{}
 	resultingMap, err := barCheckParsed.SplitBill(emailList, d)
-
 	if err != nil {
 		fmt.Println(err)
+
 		return
 	}
 	for email, amount := range resultingMap {
-		parsedValue, err := brlParser.CentsToReal(amount)
-
+		parsedValue, err := brlparser.CentsToReal(amount)
 		if err != nil {
 			fmt.Println(err)
+
 			return
 		}
 

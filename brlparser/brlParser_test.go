@@ -1,4 +1,4 @@
-package brlParser
+package brlparser
 
 import (
 	"testing"
@@ -157,6 +157,7 @@ func TestRealToCents(t *testing.T) {
 
 			if tt.expectedError != nil && err == nil {
 				t.Errorf("got %d expected an error", got)
+
 				return
 			}
 
@@ -168,6 +169,8 @@ func TestRealToCents(t *testing.T) {
 }
 
 func TestCentsToReal(t *testing.T) {
+	t.Parallel()
+
 	type testCase struct {
 		name            string
 		input           int
@@ -216,6 +219,7 @@ func TestCentsToReal(t *testing.T) {
 
 			if tt.expectedError != nil && err == nil {
 				t.Errorf("got %s expected an error", got)
+
 				return
 			}
 

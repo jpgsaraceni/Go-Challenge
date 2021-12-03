@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -143,6 +144,7 @@ func TestSplitBill(t *testing.T) {
 			got, err := tt.itemList.SplitBill(tt.emailList, &tt.shuffleMock)
 			if tt.expectedError != nil {
 				assertError(t, err, tt.expectedError)
+
 				return
 			}
 			assertSplit(t, got, tt.expectedSuccess)
@@ -159,7 +161,7 @@ func assertSplit(t testing.TB, got, expected map[string]int) {
 }
 
 func assertError(t testing.TB, gotError, expectedError error) {
-	if gotError != expectedError {
+	if !errors.Is(gotError, expectedError) {
 		t.Errorf("got %v error expected %v error", gotError, expectedError)
 	}
 }

@@ -1,4 +1,4 @@
-package brlParser
+package brlparser
 
 import (
 	"errors"
@@ -8,16 +8,22 @@ import (
 	"strings"
 )
 
-var errInputPrice = errors.New("preços contêm caracteres inválidos")
-var errNegativeValue = errors.New("valor negativo")
+var (
+	errInputPrice    = errors.New("preços contêm caracteres inválidos")
+	errNegativeValue = errors.New("valor negativo")
+)
 
 func RealToCents(input string) (int, error) {
 	input = strings.Replace(input, ",", ".", 1)
 
-	if s, err := strconv.ParseFloat(input, 32); err == nil {
+	floatBitSize := 32
+
+	if s, err := strconv.ParseFloat(input, floatBitSize); err == nil {
 		s = math.Round(s * 100)
+
 		return int(s), nil
 	}
+
 	return 0, errInputPrice
 }
 
@@ -32,7 +38,7 @@ func CentsToReal(value int) (string, error) {
 
 	valueString := strconv.Itoa(value)
 
-	if value < 10 {
+	if digitLimit := 10; value < digitLimit {
 		return "R$0,0" + valueString, nil
 	}
 
@@ -43,5 +49,6 @@ func CentsToReal(value int) (string, error) {
 	wholePart := valueString[:len(valueString)-2]
 	decimalPart := valueString[len(valueString)-2:]
 	valueString = fmt.Sprintf("R$%s%s,%s", wholePrefix, wholePart, decimalPart)
+
 	return valueString, nil
 }
