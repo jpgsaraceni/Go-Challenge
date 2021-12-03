@@ -16,7 +16,7 @@ var (
 func RealToCents(input string) (int, error) {
 	input = strings.Replace(input, ",", ".", 1)
 
-	floatBitSize := 32
+	const floatBitSize int = 32
 
 	if s, err := strconv.ParseFloat(input, floatBitSize); err == nil {
 		s = math.Round(s * 100)
