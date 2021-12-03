@@ -6,7 +6,7 @@ linters-settings:
   dupl:
     threshold: 200
   goimports:
-    local-prefixes: github.com/dlpco/kickout
+    local-prefixes: github.com/jpgsaraceni/Go-Challenge
   gofumpt:
     lang-version: "1.17"
     extra-rules: true
