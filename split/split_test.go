@@ -141,6 +141,13 @@ func TestSplitBill(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			err := tt.emailList.checkForRepeated()
+			if tt.expectedError != nil {
+				assertError(t, err, tt.expectedError)
+
+				return
+			}
+
 			got, err := tt.itemList.SplitBill(tt.emailList, &tt.shuffleMock)
 			if tt.expectedError != nil {
 				assertError(t, err, tt.expectedError)
